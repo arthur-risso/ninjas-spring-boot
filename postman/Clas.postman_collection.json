@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "API Ninjas - Clãs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "idCla", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Cadastrar clã",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Retorna id_cla', () => pm.expect(body.id_cla).to.be.a('number'));",
+              "pm.collectionVariables.set('idCla', body.id_cla);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Uchiha\",\n  \"descricao\": \"Clã lendário da Folha, famoso pelo Sharingan\",\n  \"habilidade\": \"Sharingan\"\n}"
+        },
+        "url": "{{baseUrl}}/clas"
+      }
+    },
+    {
+      "name": "Cadastrar clã inválido (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Ab\",\n  \"descricao\": \"\",\n  \"habilidade\": \"Xyz\"\n}"
+        },
+        "url": "{{baseUrl}}/clas"
+      }
+    },
+    {
+      "name": "Listar clãs",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/clas" }
+    },
+    {
+      "name": "Pesquisar clã por ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('ID confere', () => pm.expect(pm.response.json().id_cla).to.eql(Number(pm.collectionVariables.get('idCla'))));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/clas/id/{{idCla}}" }
+    },
+    {
+      "name": "Pesquisar clã por nome",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Nome confere', () => pm.expect(pm.response.json().nome).to.eql('Uchiha'));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/clas/nome/Uchiha" }
+    },
+    {
+      "name": "Pesquisar clã por parte da descrição",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Todos contêm o termo', () => pm.response.json().forEach(c => pm.expect(c.descricao).to.include('Folha')));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/clas/descricao/Folha" }
+    },
+    {
+      "name": "Atualizar clã",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Habilidade atualizada', () => pm.expect(pm.response.json().habilidade).to.eql('Mangekyou Sharingan'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Uchiha\",\n  \"descricao\": \"Clã da Folha - atualizado\",\n  \"habilidade\": \"Mangekyou Sharingan\"\n}"
+        },
+        "url": "{{baseUrl}}/clas/{{idCla}}"
+      }
+    },
+    {
+      "name": "Deletar clã",
+      "event": [
+        {
+          "listen": "test",
+          "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+        }
+      ],
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/clas/{{idCla}}" }
+    }
+  ]
+}
